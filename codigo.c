@@ -129,6 +129,36 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
     }
 }
 
+  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
+    Node* nodeAtualJogador1 = jogador1->frente;
+    Node* nodeAtualJogador2 = jogador2->frente;
+    PecaDomino pecaJogada;
+
+/*    while (nodeAtualJogador1 != NULL) {
+        if (nodeAtualJogador1->peca.ladoA == nodeAtualJogador1->peca.ladoB) {
+            while (nodeAtualJogador2 != NULL) {
+                if (nodeAtualJogador2->peca.ladoA == nodeAtualJogador2->peca.ladoB) {
+                    if (nodeAtualJogador1->peca.ladoA == nodeAtualJogador2->peca.ladoA) {
+                        // Joga o jogador com a peça igual de maior valor
+                        if (nodeAtualJogador1->peca.ladoA > nodeAtualJogador2->peca.ladoA) {
+                            pecaJogada = nodeAtualJogador1->peca;
+                            desenfileirar(jogador1);
+                        } else {
+                            pecaJogada = nodeAtualJogador2->peca;
+                            desenfileirar(jogador2);
+                        }
+                        enfileirar(mesa, pecaJogada);
+                        return;
+                    }
+                }
+                nodeAtualJogador2 = nodeAtualJogador2->proximo;
+            }
+        }
+        nodeAtualJogador1 = nodeAtualJogador1->proximo;
+        nodeAtualJogador2 = jogador2->frente;
+    } */
+  }
+
 int main() {
     Fila fila;
     inicializarFila(&fila);
@@ -164,6 +194,14 @@ int main() {
 
     printf("\nJogador 2:\n");
     imprimirFila(&jogador2);
+    
+    Fila mesa;
+    inicializarFila(&mesa);
 
+    verificarJogada(&jogador1, &jogador2, &mesa);
+  
+    printf("\nMesa:\n");
+    imprimirFila(&mesa);
+    
     return 0;
 }
