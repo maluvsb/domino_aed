@@ -129,6 +129,29 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
     }
 }
 
+/*void insertionSort(Fila* jogador) {
+    if (filaVazia(jogador)) {
+        return;
+    }
+
+    Node* atual = jogador->frente->proximo;
+
+    while (atual != NULL) {
+        PecaDomino peca = atual->peca;
+        Node* posicao = atual;
+        Node* anterior = atual->proximo;
+
+        while (posicao != jogador->frente && posicao->peca.ladoA < anterior->peca.ladoA) {
+            posicao->peca = anterior->peca;
+            posicao = anterior;
+            anterior = anterior->proximo;
+        }
+
+        posicao->peca = peca;
+        atual = atual->proximo;
+    }
+}
+
   void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
     Node* nodeAtualJogador1 = jogador1->frente;
     Node* nodeAtualJogador2 = jogador2->frente;
@@ -156,8 +179,8 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
         }
         nodeAtualJogador1 = nodeAtualJogador1->proximo;
         nodeAtualJogador2 = jogador2->frente;
-    } */
-  }
+    } 
+  } */
 
 int main() {
     Fila fila;
@@ -194,14 +217,23 @@ int main() {
 
     printf("\nJogador 2:\n");
     imprimirFila(&jogador2);
-    
+
+  /*  insertionSort(&jogador1);
+    insertionSort(&jogador2);
+
+   printf("\nJogador 1 (após a ordenação):\n");
+    imprimirFila(&jogador1);
+
+    printf("\nJogador 2 (após a ordenação):\n");
+    imprimirFila(&jogador2); */
+      
     Fila mesa;
     inicializarFila(&mesa);
 
-    verificarJogada(&jogador1, &jogador2, &mesa);
+   // verificarJogada(&jogador1, &jogador2, &mesa);
   
-    printf("\nMesa:\n");
-    imprimirFila(&mesa);
+  //  printf("\nMesa:\n");
+  //  imprimirFila(&mesa);
     
     return 0;
 }
