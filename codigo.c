@@ -129,8 +129,12 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
     }
 }
 
-/*void insertionSort(Fila* jogador) {
-    if (filaVazia(jogador)) {
+int somaLadosPeca(PecaDomino peca) {
+    return peca.pLado + peca.sLado;
+}
+
+void insertionSort(Fila* jogador) {   // ainda não ordena com insertion a pedra dos       jogadores
+    if (filaVazia(jogador)) { //código com erro acusando segmentation fault (core dumped)
         return;
     }
 
@@ -138,10 +142,11 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
 
     while (atual != NULL) {
         PecaDomino peca = atual->peca;
+        int somaPeca = somaLadosPeca(peca);
         Node* posicao = atual;
-        Node* anterior = atual->proximo;
+        Node* anterior = posicao->proximo;
 
-        while (posicao != jogador->frente && posicao->peca.ladoA < anterior->peca.ladoA) {
+        while (posicao != jogador->frente && somaLadosPeca(posicao->peca) > somaLadosPeca(anterior->peca)) {
             posicao->peca = anterior->peca;
             posicao = anterior;
             anterior = anterior->proximo;
@@ -152,10 +157,10 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
     }
 }
 
-  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
-    Node* nodeAtualJogador1 = jogador1->frente;
-    Node* nodeAtualJogador2 = jogador2->frente;
-    PecaDomino pecaJogada;
+//  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
+  //  Node* nodeAtualJogador1 = jogador1->frente;
+    //Node* nodeAtualJogador2 = jogador2->frente;
+    //PecaDomino pecaJogada;
 
 /*    while (nodeAtualJogador1 != NULL) {
         if (nodeAtualJogador1->peca.ladoA == nodeAtualJogador1->peca.ladoB) {
@@ -186,7 +191,7 @@ int main() {
     int escolha;
 
     do{
-      printf(" -------------Menu------------- \n\n");
+      printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
       printf(" 1. Iniciar Jogo\n");
       printf(" 2. Mostrar o placar\n");
       printf(" 3. Encerrar Jogo\n");
@@ -214,7 +219,7 @@ int main() {
 
       printf("\n");
       
-    }while (escolha != 3);
+    }while (escolha != 3); 
     
     Fila fila;
     inicializarFila(&fila);
@@ -229,9 +234,6 @@ int main() {
             contador++;
         }
     }
-
-    printf("Fila original:\n");
-    imprimirFila(&fila);
 
     printf("\nFila embaralhada:\n");
     embaralharFila(&fila);
@@ -251,17 +253,17 @@ int main() {
     printf("\nJogador 2:\n");
     imprimirFila(&jogador2);
 
-  /*  insertionSort(&jogador1);
-    insertionSort(&jogador2);
 
-   printf("\nJogador 1 (após a ordenação):\n");
+   /* printf("\nJogador 1 (após a ordenação):\n");
+    insertionSort(&jogador1);
     imprimirFila(&jogador1);
 
     printf("\nJogador 2 (após a ordenação):\n");
+    insertionSort(&jogador2);
     imprimirFila(&jogador2); */
       
-    Fila mesa;
-    inicializarFila(&mesa);
+   // Fila mesa;
+   // inicializarFila(&mesa);
 
    // verificarJogada(&jogador1, &jogador2, &mesa);
   
