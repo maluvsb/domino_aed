@@ -183,6 +183,39 @@ void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
   } */
 
 int main() {
+    int escolha;
+
+    do{
+      printf(" -------------Menu------------- \n\n");
+      printf(" 1. Iniciar Jogo\n");
+      printf(" 2. Mostrar o placar\n");
+      printf(" 3. Encerrar Jogo\n");
+      printf("\nDigite o número da opção desejada: ");
+      scanf("%d", &escolha);
+
+      switch (escolha) {
+        case 1:
+          printf("acrescentar a função de jogo\n");
+         break;
+
+        case 2:
+          printf("implementar a funcao de mostrar placar\n");
+        break;
+
+        case 3:
+          printf("Saindo do Jogo");
+          return 0;
+        break;
+
+        default:
+          printf("Opção inválida, digite outro número");
+        break;
+      }
+
+      printf("\n");
+      
+    }while (escolha != 3);
+    
     Fila fila;
     inicializarFila(&fila);
 
