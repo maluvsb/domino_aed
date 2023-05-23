@@ -7,9 +7,10 @@ typedef struct {
     int sLado;
 } PecaDomino;
 
-typedef struct {
+typedef struct Node {
     PecaDomino peca;
     struct Node* proximo;
+    struct Node* posicao;
 } Node;
 
 typedef struct {
@@ -133,8 +134,8 @@ int somaLadosPeca(PecaDomino peca) {
     return peca.pLado + peca.sLado;
 }
 
-void insertionSort(Fila* jogador) {   // ainda não ordena com insertion a pedra dos       jogadores
-    if (filaVazia(jogador)) { //código com erro acusando segmentation fault (core dumped)
+void insertionSort(Fila* jogador) {
+    if (filaVazia(jogador) || jogador->frente->proximo == NULL) {
         return;
     }
 
@@ -144,12 +145,11 @@ void insertionSort(Fila* jogador) {   // ainda não ordena com insertion a pedra
         PecaDomino peca = atual->peca;
         int somaPeca = somaLadosPeca(peca);
         Node* posicao = atual;
-        Node* anterior = posicao->proximo;
+        Node* anterior = posicao;
 
-        while (posicao != jogador->frente && somaLadosPeca(posicao->peca) > somaLadosPeca(anterior->peca)) {
-            posicao->peca = anterior->peca;
-            posicao = anterior;
-            anterior = anterior->proximo;
+        while (posicao != jogador->frente && somaLadosPeca(posicao->proximo->peca) > somaPeca) {
+            posicao->peca = posicao->proximo->peca;
+            posicao = posicao->proximo;
         }
 
         posicao->peca = peca;
@@ -190,7 +190,7 @@ void insertionSort(Fila* jogador) {   // ainda não ordena com insertion a pedra
 int main() {
     int escolha;
 
-    do{
+   /* do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
       printf(" 1. Iniciar Jogo\n");
       printf(" 2. Mostrar o placar\n");
@@ -219,7 +219,7 @@ int main() {
 
       printf("\n");
       
-    }while (escolha != 3); 
+    }while (escolha != 3);  */
     
     Fila fila;
     inicializarFila(&fila);
@@ -254,13 +254,13 @@ int main() {
     imprimirFila(&jogador2);
 
 
-   /* printf("\nJogador 1 (após a ordenação):\n");
+    printf("\nJogador 1 (após a ordenação):\n");
     insertionSort(&jogador1);
     imprimirFila(&jogador1);
 
     printf("\nJogador 2 (após a ordenação):\n");
     insertionSort(&jogador2);
-    imprimirFila(&jogador2); */
+    imprimirFila(&jogador2); 
       
    // Fila mesa;
    // inicializarFila(&mesa);
