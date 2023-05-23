@@ -3,8 +3,8 @@
 #include <time.h>
 
 typedef struct {
-    int ladoA;
-    int ladoB;
+    int pLado;
+    int sLado;
 } PecaDomino;
 
 typedef struct {
@@ -65,7 +65,7 @@ void imprimirFila(Fila* fila) {
     int contador = 1;
 
     while (nodeAtual != NULL) {
-        printf("Peça %d: %d|%d\n", contador, nodeAtual->peca.ladoA, nodeAtual->peca.ladoB);
+        printf("Peça %d: %d|%d\n", contador, nodeAtual->peca.pLado, nodeAtual->peca.sLado);
         nodeAtual = nodeAtual->proximo;
         contador++;
     }
@@ -90,7 +90,7 @@ void embaralharFila(Fila* fila) {
         numerosAleatorios[i] = i;
     }
 
-    srand(time(NULL));
+    srand(time(NULL)); // aleatoriedade das pedras
 
     for (int i = tamanhoFila - 1; i > 0; i--) {
         int j = rand() % (i + 1);
@@ -223,8 +223,8 @@ int main() {
     for (int i = 0; i <= 6; i++) {
         for (int j = i; j <= 6; j++) {
             PecaDomino peca;
-            peca.ladoA = i;
-            peca.ladoB = j;
+            peca.pLado = i;
+            peca.sLado = j;
             enfileirar(&fila, peca);
             contador++;
         }
