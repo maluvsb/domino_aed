@@ -118,7 +118,7 @@ void embaralharFila(Fila* fila) {
 }
 
 void distribuirPecas(Fila* fila, Fila* jogador1, Fila* jogador2) {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 6; i++) {
         if (!filaVazia(fila)) {
             enfileirar(jogador1, fila->frente->peca);
             desenfileirar(fila);
@@ -211,44 +211,58 @@ int main() {
 
     Fila jogador2;
     inicializarFila(&jogador2);
-
-    distribuirPecas(&fila, &jogador1, &jogador2);
   
     do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
-      printf(" 1. Iniciar Jogo\n");
-      printf(" 2. Mostrar o placar\n");
-      printf(" 3. Encerrar Jogo\n");
+      printf(" 1. Ver pedras embaralhadas\n");
+      printf(" 2. Iniciar Jogo\n");
+      printf(" 3. Mostrar o dorme\n");
+      printf(" 4. Mostrar o placar\n");
+      printf(" 5. Encerrar Jogo\n");
       printf("\nDigite o número da opção desejada: ");
       scanf("%d", &escolha);
 
       switch (escolha) {
+
         case 1:
-        printf("\nJogador 1:\n");
-        imprimirFila(&jogador1);
+          printf("Pedras embaralhadas, antes da distribuição: \n");
+          imprimirFila(&fila);
+        break;
+        
+        case 2:
+          distribuirPecas(&fila, &jogador1, &jogador2);
+          
+          printf("\nJogador 1:\n");
+          imprimirFila(&jogador1);
 
-        printf("\nJogador 2:\n");
-        imprimirFila(&jogador2);
-
+          printf("\nJogador 2:\n");
+          imprimirFila(&jogador2);
          break;
 
-        case 2:
+        case 3:
+          distribuirPecas(&fila, &jogador1, &jogador2);
+          
+          printf("\nDorme: \n");
+          imprimirFila(&fila);
+        break;
+
+        case 4:
           printf("implementar a funcao de mostrar placar\n");
         break;
 
-        case 3:
-          printf("Saindo do Jogo");
+        case 5:
+          printf("\nSaindo do Jogo\n");
           return 0;
         break;
-
+        
         default:
-          printf("Opção inválida, digite outro número");
+          printf("\nOpção inválida, digite outro número!\n");
         break;
       }
 
       printf("\n");
       
-    }while (escolha != 3);  
+    }while(escolha != 4);  
 
     printf("\nJogador 1 (após a ordenação):\n");
     insertionSort(&jogador1);
