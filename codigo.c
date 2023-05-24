@@ -214,22 +214,16 @@ int main() {
   
     do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
-      printf(" 1. Ver pedras embaralhadas\n");
-      printf(" 2. Iniciar Jogo\n");
-      printf(" 3. Mostrar o dorme\n");
-      printf(" 4. Mostrar o placar\n");
-      printf(" 5. Encerrar Jogo\n");
+      printf(" 1. Iniciar Jogo\n");
+      printf(" 2. Mostrar o dorme\n");
+      printf(" 3. Mostrar o placar\n");
+      printf(" 4. Encerrar Jogo\n");
       printf("\nDigite o número da opção desejada: ");
       scanf("%d", &escolha);
 
       switch (escolha) {
-
-        case 1:
-          printf("Pedras embaralhadas, antes da distribuição: \n");
-          imprimirFila(&fila);
-        break;
         
-        case 2:
+        case 1:
           distribuirPecas(&fila, &jogador1, &jogador2);
           
           printf("\nJogador 1:\n");
@@ -239,18 +233,18 @@ int main() {
           imprimirFila(&jogador2);
          break;
 
-        case 3:
+        case 2:
           distribuirPecas(&fila, &jogador1, &jogador2);
           
           printf("\nDorme: \n");
           imprimirFila(&fila);
         break;
 
-        case 4:
+        case 3:
           printf("implementar a funcao de mostrar placar\n");
         break;
 
-        case 5:
+        case 4:
           printf("\nSaindo do Jogo\n");
           return 0;
         break;
