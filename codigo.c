@@ -214,6 +214,7 @@ int main() {
   
     do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
+      printf(" 0. Mostrar fila com pedras embaralhadas\n");
       printf(" 1. Iniciar Jogo\n");
       printf(" 2. Mostrar o dorme\n");
       printf(" 3. Mostrar o placar\n");
@@ -222,6 +223,11 @@ int main() {
       scanf("%d", &escolha);
 
       switch (escolha) {
+        
+        case 0:
+          printf("\nPedras embaralhadas:\n");
+          imprimirFila(&fila);
+        break;
         
         case 1:
           distribuirPecas(&fila, &jogador1, &jogador2);
@@ -234,8 +240,6 @@ int main() {
          break;
 
         case 2:
-          distribuirPecas(&fila, &jogador1, &jogador2);
-          
           printf("\nDorme: \n");
           imprimirFila(&fila);
         break;
