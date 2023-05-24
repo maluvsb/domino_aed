@@ -189,8 +189,32 @@ void insertionSort(Fila* jogador) {
 
 int main() {
     int escolha;
+    
+    Fila fila;
+    inicializarFila(&fila);
 
-   /* do{
+    int contador = 0;
+    for (int i = 0; i <= 6; i++) {
+        for (int j = i; j <= 6; j++) {
+            PecaDomino peca;
+            peca.pLado = i;
+            peca.sLado = j;
+            enfileirar(&fila, peca);
+            contador++;
+        }
+    }
+
+    embaralharFila(&fila);
+
+    Fila jogador1;
+    inicializarFila(&jogador1);
+
+    Fila jogador2;
+    inicializarFila(&jogador2);
+
+    distribuirPecas(&fila, &jogador1, &jogador2);
+  
+    do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
       printf(" 1. Iniciar Jogo\n");
       printf(" 2. Mostrar o placar\n");
@@ -200,7 +224,12 @@ int main() {
 
       switch (escolha) {
         case 1:
-          printf("acrescentar a função de jogo\n");
+        printf("\nJogador 1:\n");
+        imprimirFila(&jogador1);
+
+        printf("\nJogador 2:\n");
+        imprimirFila(&jogador2);
+
          break;
 
         case 2:
@@ -219,40 +248,7 @@ int main() {
 
       printf("\n");
       
-    }while (escolha != 3);  */
-    
-    Fila fila;
-    inicializarFila(&fila);
-
-    int contador = 0;
-    for (int i = 0; i <= 6; i++) {
-        for (int j = i; j <= 6; j++) {
-            PecaDomino peca;
-            peca.pLado = i;
-            peca.sLado = j;
-            enfileirar(&fila, peca);
-            contador++;
-        }
-    }
-
-    printf("\nFila embaralhada:\n");
-    embaralharFila(&fila);
-    imprimirFila(&fila);
-
-    Fila jogador1;
-    inicializarFila(&jogador1);
-
-    Fila jogador2;
-    inicializarFila(&jogador2);
-
-    distribuirPecas(&fila, &jogador1, &jogador2);
-
-    printf("\nJogador 1:\n");
-    imprimirFila(&jogador1);
-
-    printf("\nJogador 2:\n");
-    imprimirFila(&jogador2);
-
+    }while (escolha != 3);  
 
     printf("\nJogador 1 (após a ordenação):\n");
     insertionSort(&jogador1);
