@@ -134,7 +134,7 @@ int somaLadosPeca(PecaDomino peca) {
     return peca.pLado + peca.sLado;
 }
 
-void insertionSort(Fila* jogador) {
+/* void insertionSort(Fila* jogador) {
     if (filaVazia(jogador) || jogador->frente->proximo == NULL) {
         return;
     }
@@ -144,18 +144,32 @@ void insertionSort(Fila* jogador) {
     while (atual != NULL) {
         PecaDomino peca = atual->peca;
         int somaPeca = somaLadosPeca(peca);
-        Node* posicao = atual;
-        Node* anterior = posicao;
+        Node* posicao = jogador->frente;
+        Node* anterior = NULL;
 
-        while (posicao != jogador->frente && somaLadosPeca(posicao->proximo->peca) > somaPeca) {
-            posicao->peca = posicao->proximo->peca;
+        while (posicao != atual && somaLadosPeca(posicao->peca) > somaPeca) {
+            anterior = posicao;
             posicao = posicao->proximo;
         }
 
-        posicao->peca = peca;
+        if (posicao != atual) {
+            // Remove o nó atual da posição atual
+            anterior->proximo = atual->proximo;
+
+            // Insere o nó atual na nova posiçã
+            if (anterior != NULL) {
+                anterior->proximo = atual;
+            } else {
+                jogador->frente = atual;
+            }
+
+            atual->proximo = posicao;
+        }
+
         atual = atual->proximo;
     }
-}
+} */
+
 
 //  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
   //  Node* nodeAtualJogador1 = jogador1->frente;
@@ -214,22 +228,22 @@ int main() {
   
     do{
       printf(" -------------Menu------------- \n\n"); // comente o menu inteiro para executar as funções
-      printf(" 0. Mostrar fila com pedras embaralhadas\n");
-      printf(" 1. Iniciar Jogo\n");
-      printf(" 2. Mostrar o dorme\n");
-      printf(" 3. Mostrar o placar\n");
-      printf(" 4. Encerrar Jogo\n");
+      printf(" 1. Mostrar fila com pedras embaralhadas\n");
+      printf(" 2. Iniciar Jogo\n");
+      printf(" 3. Mostrar o dorme\n");
+      printf(" 4. Mostrar o placar\n");
+      printf(" 5. Encerrar Jogo\n");
       printf("\nDigite o número da opção desejada: ");
       scanf("%d", &escolha);
 
       switch (escolha) {
         
-        case 0:
+        case 1:
           printf("\nPedras embaralhadas:\n");
           imprimirFila(&fila);
         break;
         
-        case 1:
+        case 2:
           distribuirPecas(&fila, &jogador1, &jogador2);
           
           printf("\nJogador 1:\n");
@@ -237,18 +251,31 @@ int main() {
 
           printf("\nJogador 2:\n");
           imprimirFila(&jogador2);
+
+          printf("\nOrdenando as pedras dos jogadores 1 e 2...\n");
+
+          printf("\nPedras dos jogadores 1 e 2 ordenadas: \n");
+
+    /*      printf("\nJogador 1: \n");
+          insertionSort(&jogador1);
+          imprimirFila(&jogador1);
+          
+          
+          printf("\nJogador 2: \n");
+          insertionSort(&jogador2);
+          imprimirFila(&jogador2);      */
          break;
 
-        case 2:
+        case 3:
           printf("\nDorme: \n");
           imprimirFila(&fila);
         break;
 
-        case 3:
+        case 4:
           printf("implementar a funcao de mostrar placar\n");
         break;
 
-        case 4:
+        case 5:
           printf("\nSaindo do Jogo\n");
           return 0;
         break;
@@ -260,16 +287,8 @@ int main() {
 
       printf("\n");
       
-    }while(escolha != 4);  
+    }while(escolha != 5);  
 
-    printf("\nJogador 1 (após a ordenação):\n");
-    insertionSort(&jogador1);
-    imprimirFila(&jogador1);
-
-    printf("\nJogador 2 (após a ordenação):\n");
-    insertionSort(&jogador2);
-    imprimirFila(&jogador2); 
-      
    // Fila mesa;
    // inicializarFila(&mesa);
 
