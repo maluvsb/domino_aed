@@ -202,7 +202,7 @@ int somaLadosPeca(PecaDomino peca) {
   } */
 
 int main() {
-    int escolha;
+    int escolha, peca;
     
     Fila fila;
     inicializarFila(&fila);
