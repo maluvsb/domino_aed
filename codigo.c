@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+void insertionSort(int arr[], int size);
+
 typedef struct {
     int pLado;
     int sLado;
@@ -10,7 +12,6 @@ typedef struct {
 typedef struct Node {
     PecaDomino peca;
     struct Node* proximo;
-    struct Node* posicao;
 } Node;
 
 typedef struct {
@@ -150,61 +151,29 @@ void calcularSomaLadosJogador(Fila* jogador) {
     }
 }
 
-void insertionSort(Fila* jogador) {
-    if (filaVazia(jogador)) {
-        return;
+int tamanhoFila(Fila* fila) {
+    int tamanho = 0;
+    Node* nodeAtual = fila->frente;
+    while (nodeAtual != NULL) {
+        tamanho++;
+        nodeAtual = nodeAtual->proximo;
     }
-
-    Node* i = jogador->frente->proximo;
-    while (i != NULL) {
-        Node* chave = i;
-        int chaveValor = somaLadosPeca(chave->peca);
-
-        Node* j = i->posicao;
-        while (j != NULL && somaLadosPeca(j->peca) > chaveValor) {
-            j->proximo->peca = j->peca;
-            j = j->posicao;
-        }
-
-        if (j != NULL) {
-            j->proximo->peca = chave->peca;
-        } else {
-            jogador->frente->peca = chave->peca;
-        }
-
-        i = i->proximo;
-    }
+    return tamanho;
 }
 
-//  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
-  //  Node* nodeAtualJogador1 = jogador1->frente;
-    //Node* nodeAtualJogador2 = jogador2->frente;
-    //PecaDomino pecaJogada;
+void insertionSort(int arr[], int size) {
+    int i, key, j;
+    for (i = 1; i < size; i++) {
+        key = arr[i];
+        j = i - 1;
 
-/*    while (nodeAtualJogador1 != NULL) {
-        if (nodeAtualJogador1->peca.ladoP == nodeAtualJogador1->peca.ladoS) {
-            while (nodeAtualJogador2 != NULL) {
-                if (nodeAtualJogador2->peca.ladoP == nodeAtualJogador2->peca.ladoS) {
-                    if (nodeAtualJogador1->peca.ladoP == nodeAtualJogador2->peca.ladoP) {
-                        // Joga o jogador com a peça igual de maior valor
-                        if (nodeAtualJogador1->peca.ladoP > nodeAtualJogador2->peca.ladoP) {
-                            pecaJogada = nodeAtualJogador1->peca;
-                            desenfileirar(jogador1);
-                        } else {
-                            pecaJogada = nodeAtualJogador2->peca;
-                            desenfileirar(jogador2);
-                        }
-                        enfileirar(mesa, pecaJogada);
-                        return;
-                    }
-                }
-                nodeAtualJogador2 = nodeAtualJogador2->proximo;
-            }
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
         }
-        nodeAtualJogador1 = nodeAtualJogador1->proximo;
-        nodeAtualJogador2 = jogador2->frente;
-    } 
-  } */
+        arr[j + 1] = key;
+    }
+}
 
 int main(){
     int escolha, peca;
@@ -212,14 +181,14 @@ int main(){
     Fila fila;
     inicializarFila(&fila);
 
-    int contador = 0;
+    int count = 0;
     for (int i = 0; i <= 6; i++) {
         for (int j = i; j <= 6; j++) {
             PecaDomino peca;
             peca.pLado = i;
             peca.sLado = j;
             enfileirar(&fila, peca);
-            contador++;
+            count++;
         }
     }
 
@@ -290,14 +259,57 @@ int main(){
           printf("\nOrdenando as pedras dos jogadores 1 e 2...\n");
           printf("\nPedras dos jogadores 1 e 2 ordenadas: \n");
 
-          printf("\nJogador 1 (após a ordenação):\n");
-          insertionSort(&jogador1);
-          imprimirFila(&jogador1);
-          
-          printf("\nJogador 2 (após a ordenação):\n");
-          insertionSort(&jogador2);
-          imprimirFila(&jogador2);
-         break;
+          int tamanhoJogador1 = tamanhoFila(&jogador1);
+          int tamanhoJogador2 = tamanhoFila(&jogador2);
+
+          int *vetorJogador1 = (int *)malloc(tamanhoJogador1 * sizeof(int));
+          int *vetorJogador2 = (int *)malloc(tamanhoJogador2 * sizeof(int));
+
+          Node *nodeAtual = jogador1.frente;
+          for (int i = 0; i < tamanhoJogador1; i++) {
+          vetorJogador1[i] = somaLadosPeca(nodeAtual->peca);
+          nodeAtual = nodeAtual->proximo;
+      }
+
+          nodeAtual = jogador2.frente;
+          for(int i = 0; i < tamanhoJogador2; i++) {
+          vetorJogador2[i] = somaLadosPeca(nodeAtual->peca);
+          nodeAtual = nodeAtual->proximo;
+      }
+
+          insertionSort(vetorJogador1, tamanhoJogador1);
+          insertionSort(vetorJogador2, tamanhoJogador2);
+
+          // Reincorporando os valores ordenados nas filas dos jogadores
+          inicializarFila(&jogador1);
+          inicializarFila(&jogador2);
+
+          for (int i = 0; i < tamanhoJogador1; i++) {
+          PecaDomino peca;
+        peca.pLado = vetorJogador1[i];
+        peca.sLado = 0;
+        enfileirar(&jogador1, peca);
+    }
+
+    for (int i = 0; i < tamanhoJogador2; i++) {
+        PecaDomino peca;
+        peca.pLado = vetorJogador2[i];
+        peca.sLado = 0;
+        enfileirar(&jogador2, peca);
+    }
+
+    // Liberando memória alocada para os vetores
+    free(vetorJogador1);
+    free(vetorJogador2);
+
+    // Imprimindo as filas dos jogadores após a ordenação
+    printf("\nJogador 1 (após a ordenação):\n");
+    imprimirFila(&jogador1);
+
+    printf("\nJogador 2 (após a ordenação):\n");
+    imprimirFila(&jogador2);
+    break;
+         break; 
 
         case 3:
           printf("\nDorme: \n");
@@ -321,14 +333,6 @@ int main(){
       printf("\n");
       
     }while(escolha != 5);  
-
-   // Fila mesa;
-   // inicializarFila(&mesa);
-
-   // verificarJogada(&jogador1, &jogador2, &mesa);
-  
-  //  printf("\nMesa:\n");
-  //  imprimirFila(&mesa);
     
     return 0;
 }
