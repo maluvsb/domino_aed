@@ -134,42 +134,47 @@ int somaLadosPeca(PecaDomino peca) {
     return peca.pLado + peca.sLado;
 }
 
-/* void insertionSort(Fila* jogador) {
-    if (filaVazia(jogador) || jogador->frente->proximo == NULL) {
+void calcularSomaLadosJogador(Fila* jogador) {
+    int count = 1;
+    if (filaVazia(jogador)) {
         return;
     }
 
-    Node* atual = jogador->frente->proximo;
+    Node* nodeAtual = jogador->frente;
 
-    while (atual != NULL) {
-        PecaDomino peca = atual->peca;
-        int somaPeca = somaLadosPeca(peca);
-        Node* posicao = jogador->frente;
-        Node* anterior = NULL;
-
-        while (posicao != atual && somaLadosPeca(posicao->peca) > somaPeca) {
-            anterior = posicao;
-            posicao = posicao->proximo;
-        }
-
-        if (posicao != atual) {
-            // Remove o nó atual da posição atual
-            anterior->proximo = atual->proximo;
-
-            // Insere o nó atual na nova posiçã
-            if (anterior != NULL) {
-                anterior->proximo = atual;
-            } else {
-                jogador->frente = atual;
-            }
-
-            atual->proximo = posicao;
-        }
-
-        atual = atual->proximo;
+    while (nodeAtual != NULL) {
+        int somaLados = somaLadosPeca(nodeAtual->peca);
+        printf("Peça %d: %d | ", count, somaLados);
+        nodeAtual = nodeAtual->proximo;
+        count++;
     }
-} */
+}
 
+void insertionSort(Fila* jogador) {
+    if (filaVazia(jogador)) {
+        return;
+    }
+
+    Node* i = jogador->frente->proximo;
+    while (i != NULL) {
+        Node* chave = i;
+        int chaveValor = somaLadosPeca(chave->peca);
+
+        Node* j = i->posicao;
+        while (j != NULL && somaLadosPeca(j->peca) > chaveValor) {
+            j->proximo->peca = j->peca;
+            j = j->posicao;
+        }
+
+        if (j != NULL) {
+            j->proximo->peca = chave->peca;
+        } else {
+            jogador->frente->peca = chave->peca;
+        }
+
+        i = i->proximo;
+    }
+}
 
 //  void verificarJogada(Fila* jogador1, Fila* jogador2, Fila* mesa) {
   //  Node* nodeAtualJogador1 = jogador1->frente;
@@ -177,12 +182,12 @@ int somaLadosPeca(PecaDomino peca) {
     //PecaDomino pecaJogada;
 
 /*    while (nodeAtualJogador1 != NULL) {
-        if (nodeAtualJogador1->peca.ladoA == nodeAtualJogador1->peca.ladoB) {
+        if (nodeAtualJogador1->peca.ladoP == nodeAtualJogador1->peca.ladoS) {
             while (nodeAtualJogador2 != NULL) {
-                if (nodeAtualJogador2->peca.ladoA == nodeAtualJogador2->peca.ladoB) {
-                    if (nodeAtualJogador1->peca.ladoA == nodeAtualJogador2->peca.ladoA) {
+                if (nodeAtualJogador2->peca.ladoP == nodeAtualJogador2->peca.ladoS) {
+                    if (nodeAtualJogador1->peca.ladoP == nodeAtualJogador2->peca.ladoP) {
                         // Joga o jogador com a peça igual de maior valor
-                        if (nodeAtualJogador1->peca.ladoA > nodeAtualJogador2->peca.ladoA) {
+                        if (nodeAtualJogador1->peca.ladoP > nodeAtualJogador2->peca.ladoP) {
                             pecaJogada = nodeAtualJogador1->peca;
                             desenfileirar(jogador1);
                         } else {
@@ -201,7 +206,7 @@ int somaLadosPeca(PecaDomino peca) {
     } 
   } */
 
-int main() {
+int main(){
     int escolha, peca;
     
     Fila fila;
@@ -236,7 +241,7 @@ int main() {
       printf("\nDigite o número da opção desejada: ");
       scanf("%d", &escolha);
 
-      switch (escolha) {
+      switch(escolha){
         
         case 1:
           printf("\nPedras embaralhadas:\n");
@@ -245,6 +250,8 @@ int main() {
         
         case 2:
           distribuirPecas(&fila, &jogador1, &jogador2);
+
+          printf("\nMão dos Jogadores 1 e 2: \n");
           
           printf("\nJogador 1:\n");
           imprimirFila(&jogador1);
@@ -252,18 +259,44 @@ int main() {
           printf("\nJogador 2:\n");
           imprimirFila(&jogador2);
 
-          printf("\nOrdenando as pedras dos jogadores 1 e 2...\n");
+          printf("\n");
+          printf("\n");
 
+          printf("--------------------------------X--------------------------------");
+
+          printf("\n");
+          printf("\n");
+
+          printf("\nSoma dos dois lados das pedras de cada jogador: \n");
+
+          printf("\nJogador 1: \n");
+          calcularSomaLadosJogador(&jogador1);
+
+          printf("\n");
+          printf("\n");
+          
+          printf("\nJogador 2: \n");
+          calcularSomaLadosJogador(&jogador2);
+
+          printf("\n");
+          printf("\n");
+          printf("\n");
+
+          printf("--------------------------------X--------------------------------");
+
+          printf("\n");
+          printf("\n");
+          
+          printf("\nOrdenando as pedras dos jogadores 1 e 2...\n");
           printf("\nPedras dos jogadores 1 e 2 ordenadas: \n");
 
-    /*      printf("\nJogador 1: \n");
+          printf("\nJogador 1 (após a ordenação):\n");
           insertionSort(&jogador1);
           imprimirFila(&jogador1);
           
-          
-          printf("\nJogador 2: \n");
+          printf("\nJogador 2 (após a ordenação):\n");
           insertionSort(&jogador2);
-          imprimirFila(&jogador2);      */
+          imprimirFila(&jogador2);
          break;
 
         case 3:
