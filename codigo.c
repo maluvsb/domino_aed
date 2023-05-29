@@ -536,13 +536,13 @@ int main() {
       break;
 
     case 2:
-        printf("Placar:\n");
-        printf("Jogador 1: %d vitórias\n", cont_jogador1);
-        printf("Jogador 2: %d vitórias\n", cont_jogador2);
+        printf("\n Placar: \n");
+        printf("\nJogador 1: %d vitórias\n", cont_jogador1);
+        printf("\nJogador 2: %d vitórias\n", cont_jogador2);
       break;
 
     case 3:
-      printf("\nSaindo do Jogo\n");
+      printf("\n Saindo do Jogo... \n");
       return 0;
       break;
 
