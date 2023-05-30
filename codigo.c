@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
-void insertionSort(int arr[], int size);
+#include <string.h>
 
 typedef struct {
   int pLado;
@@ -19,6 +18,11 @@ typedef struct {
   Node *frente;
   Node *tras;
 } Fila;
+
+typedef struct Player{
+  char name[50];
+  int victories;
+} Player;
 
 void inicializarFila(Fila *fila) {
   fila->frente = NULL;
@@ -38,27 +42,6 @@ void enfileirar(Fila *fila, PecaDomino peca) {
   } else {
     fila->tras->proximo = novoNode;
     fila->tras = novoNode;
-  }
-}
-void inserirNaMesa(Fila *fila, PecaDomino peca) {
-  Node *novoNode = (Node *)malloc(sizeof(Node));
-  novoNode->peca = peca;
-  novoNode->proximo = NULL;
-
-  if (filaVazia(fila)) {
-    fila->frente = novoNode;
-    fila->tras = novoNode;
-  } else {
-    int ladoEscolhido;
-    printf("Escolha o lado para adicionar a peça (1 - Frente, 2 - Trás): ");
-    scanf("%d", &ladoEscolhido);
-    if (ladoEscolhido == 1) {
-      novoNode->proximo = fila->frente;
-      fila->frente = novoNode;
-    } else if (ladoEscolhido == 2) {
-      fila->tras->proximo = novoNode;
-      fila->tras = novoNode;
-    }
   }
 }
 
@@ -171,13 +154,13 @@ void calcularSomaLadosJogador(Fila *jogador) {
 }
 
 int contarPontos(Fila *fila) {
-    int pontos = 0;
-    Node *nodeAtual = fila->frente;
-    while (nodeAtual != NULL) {
-        pontos += nodeAtual->peca.pLado + nodeAtual->peca.sLado;
-        nodeAtual = nodeAtual->proximo;
-    }
-    return pontos;
+  int pontos = 0;
+  Node *nodeAtual = fila->frente;
+  while (nodeAtual != NULL) {
+    pontos += nodeAtual->peca.pLado + nodeAtual->peca.sLado;
+    nodeAtual = nodeAtual->proximo;
+  }
+  return pontos;
 }
 
 int contarNumPecas(Node *jogador) {
@@ -192,46 +175,31 @@ int contarNumPecas(Node *jogador) {
   return count;
 }
 
-void calcularRanking(Fila *filaJogadores, int *ranking) {
-    int numJogadores = 0;
-    Node *nodeAtual = filaJogadores->frente;
+void insertion_sort_ranking(Player players[], int n) {
+  int i, j;
+  Player atual;
 
-    while (nodeAtual != NULL) {
-        numJogadores++;
-        nodeAtual = nodeAtual->proximo;
+  for (i = 1; i < n; i++) {
+    atual = players[i];
+    j = i - 1;
+
+    while (j >= 0 && players[j].victories < atual.victories) {
+      players[j + 1] = players[j];
+      j--;
     }
 
-    Node *jogadores[numJogadores]; // Array para armazenar os ponteiros para os jogadores
-    nodeAtual = filaJogadores->frente;
-
-    for (int i = 0; i < numJogadores; i++) {
-        jogadores[i] = nodeAtual; // Armazena o ponteiro para cada jogador no array
-        nodeAtual = nodeAtual->proximo;
-    }
-
-    // Ordenação utilizando Insertion Sort
-    for (int i = 1; i < numJogadores; i++) {
-        Node *jogadorAtual = jogadores[i];
-        int pontosAtual = contarPontos(jogadorAtual);
-        int numPecasAtual = contarNumPecas(jogadorAtual);
-        int j = i - 1;
-
-        while (j >= 0 && (contarPontos(jogadores[j]) < pontosAtual ||
-                          (contarPontos(jogadores[j]) == pontosAtual &&
-                           contarNumPecas(jogadores[j]) < numPecasAtual))) {
-            jogadores[j + 1] = jogadores[j];
-            j--;
-        }
-
-        jogadores[j + 1] = jogadorAtual;
-    }
-
-    // Atualiza o ranking com base na ordem dos jogadores no array ordenado
-    for (int i = 0; i < numJogadores; i++) {
-        ranking[i + 1]++; // A posição do jogador no array ordenado é a posição no ranking
-    }
+    players[j + 1] = atual;
+  }
 }
 
+void show_ranking(Player players[], int n) {
+  insertion_sort_ranking(players, n);
+
+  for (int i = 0; i < n; i++) {
+    printf("#%d: %s - Vitórias: %d\n", i + 1, players[i].name,
+           players[i].victories);
+  }
+}
 
 int tamanhoFila(Fila *fila) {
   int tamanho = 0;
@@ -244,9 +212,9 @@ int tamanhoFila(Fila *fila) {
 }
 
 void sleep_ms(unsigned int milliseconds) { usleep(milliseconds * 1000); }
+
 PecaDomino removerPeca(Fila *jogador, int escolha) {
   if (escolha < 1 || escolha > tamanhoFila(jogador)) {
-    printf("Escolha inválida. Digite um número válido.\n");
     PecaDomino pecaInvalida = {-1, -1}; // Retorna uma peça inválida
     return pecaInvalida;
   }
@@ -262,7 +230,6 @@ PecaDomino removerPeca(Fila *jogador, int escolha) {
   }
 
   if (nodeAtual == NULL) {
-    printf("Escolha inválida. Digite um número válido.\n");
     PecaDomino pecaInvalida = {-1, -1}; // Retorna uma peça inválida
     return pecaInvalida;
   }
@@ -283,64 +250,37 @@ PecaDomino removerPeca(Fila *jogador, int escolha) {
 
   return pecaRemovida;
 }
-// printf("\n\nEscolha uma peça:");
-// scanf("%d",&escolha);
-// PecaDomino teste = removerPeca(&jogador1,escolha);
-// imprimirFila(&jogador1);
-// enfileirar(&mesa, teste);
-// printf("\n\n-----MESA-----\n");
-// imprimirFila(&mesa);
-// mesa.frente->peca.pLado = teste.pLado;
-// mesa.tras->peca.sLado = teste.sLado;
-// printf("\nprimeiro lado : %d", mesa.frente->peca.pLado);
-// printf("\nsegundo lado: %d", mesa.tras->peca.sLado);
 
-void mesaDomino(Fila *fila, PecaDomino peca, int ordem) {
-  Node *novoNode = (Node *)malloc(sizeof(Node));
-  novoNode->peca = peca;
-  novoNode->proximo = NULL;
-
-  if (filaVazia(fila)) {
-    fila->frente = novoNode;
-    fila->tras = novoNode;
-  } else {
-    if (ordem == 1) {
-      // Jogador 1 começa, verifique se pLado da peça é igual à frente ou ao
-      // lado da frente
-      if (peca.pLado == fila->frente->peca.pLado ||
-          peca.pLado == fila->frente->peca.sLado) {
-        fila->frente->peca.pLado = peca.sLado;
-      } else {
-        fila->tras->peca.sLado = peca.pLado;
-      }
-    } else {
-      // Jogador 2 começa, verifique se sLado da peça é igual à frente ou ao
-      // lado da frente
-      if (peca.sLado == fila->frente->peca.pLado ||
-          peca.sLado == fila->frente->peca.sLado) {
-        fila->frente->peca.pLado = peca.pLado;
-      } else {
-        fila->tras->peca.sLado = peca.sLado;
-      }
-    }
-
-    fila->tras->proximo = novoNode;
-    fila->tras = novoNode;
+PecaDomino obterPeca(Fila *jogador, int escolha) {
+  if (escolha < 1 || escolha > tamanhoFila(jogador)) {
+    PecaDomino pecaInvalida = {-1, -1}; // Retorna uma peça inválida
+    return pecaInvalida;
   }
 
-  // Verificar se algum jogador ficou sem peças -- faço isso na main
-  // if (filaVazia(&jogador1)) {
-  //     printf("Jogador 1 ganhou!\n");
-  // } else if (filaVazia(&jogador2)) {
-  //     printf("Jogador 2 ganhou!\n");
-  // }
+  Node *nodeAtual = jogador->frente;
+  int contador = 1;
+
+  while (nodeAtual != NULL && contador != escolha) {
+    nodeAtual = nodeAtual->proximo;
+    contador++;
+  }
+
+  if (nodeAtual == NULL) {
+    PecaDomino pecaInvalida = {-1, -1}; // Retorna uma peça inválida
+    return pecaInvalida;
+  }
+
+  PecaDomino pecaEscolhida = nodeAtual->peca;
+
+  return pecaEscolhida;
 }
 
 int main() {
   int escolha, peca, cont_jogador1 = 0, cont_jogador2 = 0;
+  int referencia[2];
   PecaDomino teste;
   Fila fila;
-
+  Player players[2];
   do {
     inicializarFila(&fila);
 
@@ -365,6 +305,7 @@ int main() {
 
     Fila mesa;
     inicializarFila(&mesa);
+    system("clear");
     printf(" -------------Menu------------- \n\n"); // comente o menu inteiro
                                                     // para executar as funções
     printf(" 1. Iniciar Jogo\n");
@@ -374,39 +315,39 @@ int main() {
     scanf("%d", &escolha);
 
     switch (escolha) {
-      
+
     case 1:
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[     ]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[|    ]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[||   ]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[|||  ]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[|||| ]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
-      // printf("\nCarregando Mão dos Jogadores 1 e 2:\n");
-      // printf("\t\t\t[|||||]");
-      // fflush(stdout);
-      // sleep_ms(1000);
-      // system("clear");
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2.\n");
+      printf("\t\t\t[     ]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2..\n");
+      printf("\t\t\t[|    ]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2...\n");
+      printf("\t\t\t[||   ]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2\n");
+      printf("\t\t\t[|||  ]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2.\n");
+      printf("\t\t\t[|||| ]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
+      printf("\nCarregando Mão dos Jogadores 1 e 2..\n");
+      printf("\t\t\t[|||||]");
+      fflush(stdout);
+      sleep_ms(1000);
+      system("clear");
       if (!filaVazia(&mesa)) {
         while (!filaVazia(&mesa)) {
           desenfileirar(&mesa);
@@ -418,50 +359,90 @@ int main() {
 
       printf("\nJogador 2:\n");
       imprimirFila(&jogador2);
-
+      sleep_ms(3000);
       printf("\n");
       printf("\n");
       int escolha, randomico;
       srand(time(NULL));
       randomico = (rand() % 2) + 1;
       if (filaVazia(&mesa)) {
-
+        // primeira jogada
         if (randomico == 1) {
-          printf("\n+Vez do jogador 1.");
+          system("clear");
+          printf("\nJogador 1:\n");
+          imprimirFila(&jogador1);
+          printf("\nVez do jogador 1.");
           printf("\nEscolha uma peça: ");
           scanf("%d", &escolha);
           teste = removerPeca(&jogador1, escolha);
+          referencia[0] = teste.pLado;
+          referencia[1] = teste.sLado;
           enfileirar(&mesa, teste);
         }
         if (randomico == 2) {
-          printf("\n+Vez do jogador 2.");
+          system("clear");
+          printf("\nJogador 2:\n");
+          imprimirFila(&jogador2);
+          printf("\nVez do jogador 2.");
           printf("\nEscolha uma peça: ");
           scanf("%d", &escolha);
           teste = removerPeca(&jogador2, escolha);
+          referencia[0] = teste.pLado;
+          referencia[1] = teste.sLado;
           enfileirar(&mesa, teste);
         }
       }
+      // fim primeira jogada
+      // começo resto das jogadas começando pelo jogador 2
       if (!filaVazia(&mesa)) {
         if (randomico == 1) {
           while (!filaVazia(&jogador1) && !filaVazia(&jogador2)) {
-            printf("\n -Vez do jogador 2: ");
+            int cont_gato_lebre_p1 = 7, cont_gato_lebre_p2 = 7;
+            system("clear");
+            printf("\nJogador 2:\n");
+            imprimirFila(&jogador2);
+            printf("\nNúmeros disponíveis em cada lado: \n");
+            printf("\n\t\t\t\t%d|%d\n", referencia[0], referencia[1]);
+            printf("\nVez do jogador 2: ");
             printf("\nEscolha uma peça: ");
             scanf("%d", &escolha);
-            teste = removerPeca(&jogador2, escolha);
-            enfileirar(&mesa, teste);
-            printf("\n -Vez do jogador 1: ");
-            printf("\nEscolha uma peça: ");
-            scanf("%d", &escolha);
-            teste = removerPeca(&jogador1, escolha);
-            enfileirar(&mesa, teste);
-            if (filaVazia(&jogador1)) {
-              printf("\nJogador1 Ganhou!\n");
-              cont_jogador1++;
-              while (!filaVazia(&jogador2)) {
-                desenfileirar(&jogador2);
-              }
+            if (escolha == 0) {
               break;
             }
+            if (escolha > 6 || escolha < 0) {
+              system("clear");
+              printf("\nJogador 2 tocou!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            teste = obterPeca(&jogador2, escolha);
+            if (teste.pLado == referencia[0]) {
+              removerPeca(&jogador2, escolha);
+              referencia[0] = teste.sLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.sLado == referencia[0]) {
+              removerPeca(&jogador2, escolha);
+              referencia[0] = teste.pLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.pLado == referencia[1]) {
+              removerPeca(&jogador2, escolha);
+              referencia[1] = teste.sLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.sLado == referencia[1]) {
+              removerPeca(&jogador2, escolha);
+              referencia[1] = teste.pLado;
+              cont_gato_lebre_p2--;
+            } else if (escolha < cont_gato_lebre_p2 && escolha > 0 &&
+                       teste.pLado != referencia[0] &&
+                       teste.sLado != referencia[0] &&
+                       teste.pLado != referencia[1] &&
+                       teste.sLado != referencia[1]) {
+              system("clear");
+              printf("\nOlha o gato com lebre aí, jogador! Perdeu a vez.");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            enfileirar(&mesa, teste);
             if (filaVazia(&jogador2)) {
               printf("\nJogador2 Ganhou!\n");
               cont_jogador2++;
@@ -470,18 +451,114 @@ int main() {
               }
               break;
             }
+            system("clear");
+            printf("\nJogador 1:\n");
+            imprimirFila(&jogador1);
+            printf("\nNúmeros disponíveis em cada lado: \n");
+            printf("\n\t\t\t\t%d|%d\n", referencia[0], referencia[1]);
+            printf("\nVez do jogador 1: ");
+            printf("\nEscolha uma peça: ");
+            scanf("%d", &escolha);
+            if (escolha == 0) {
+              break;
+            }
+            if (escolha > 6 || escolha < 0) {
+              system("clear");
+              printf("\nJogador 1 tocou!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            teste = obterPeca(&jogador1, escolha);
+            if (teste.pLado == referencia[0]) {
+              removerPeca(&jogador1, escolha);
+              referencia[0] = teste.sLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.sLado == referencia[0]) {
+              removerPeca(&jogador1, escolha);
+              referencia[0] = teste.pLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.pLado == referencia[1]) {
+              removerPeca(&jogador1, escolha);
+              referencia[1] = teste.sLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.sLado == referencia[1]) {
+              removerPeca(&jogador1, escolha);
+              referencia[1] = teste.pLado;
+              cont_gato_lebre_p1--;
+            } else if (escolha < cont_gato_lebre_p1 && escolha > 0 &&
+                       teste.pLado != referencia[0] &&
+                       teste.sLado != referencia[0] &&
+                       teste.pLado != referencia[1] &&
+                       teste.sLado != referencia[1]) {
+              system("clear");
+              printf("\nOlha o gato com lebre aí, jogador! Perdeu a vez.");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            enfileirar(&mesa, teste);
+            // fim do resto das jogadas começando pelo jogador 2
+            // começo print dos ganhadores
+            if (filaVazia(&jogador1)) {
+              printf("\nJogador1 Ganhou!\n");
+              cont_jogador1++;
+              while (!filaVazia(&jogador2)) {
+                desenfileirar(&jogador2);
+              }
+              break;
+            }
+            // fim print dos ganhadores
           }
+          // começo do resto das jogadas começando pelo jogador 1
         } else {
           while (!filaVazia(&jogador1) && !filaVazia(&jogador2)) {
-            printf("\n=Vez do jogador 1: ");
+            int cont_gato_lebre_p1 = 7, cont_gato_lebre_p2 = 7;
+            system("clear");
+            printf("\nJogador 1:\n");
+            imprimirFila(&jogador1);
+            printf("\nNúmeros disponíveis em cada lado: \n");
+            printf("\n\t\t\t\t%d|%d\n", referencia[0], referencia[1]);
+            printf("\nVez do jogador 1: ");
             printf("\nEscolha uma peça: ");
             scanf("%d", &escolha);
-            teste = removerPeca(&jogador1, escolha);
-            enfileirar(&mesa, teste);
-            printf("\n=Vez do jogador 2: ");
-            printf("\nEscolha uma peça: ");
-            scanf("%d", &escolha);
-            teste = removerPeca(&jogador2, escolha);
+            if (escolha == 0) {
+              printf("\nJogo interrompido!\n");
+              sleep_ms(1000);
+              system("clear");
+              break;
+            }
+            if (escolha > 6 || escolha < 0) {
+              system("clear");
+              printf("\nJogador 1 tocou!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            teste = obterPeca(&jogador1, escolha);
+            if (teste.pLado == referencia[0]) {
+              removerPeca(&jogador1, escolha);
+              referencia[0] = teste.sLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.sLado == referencia[0]) {
+              removerPeca(&jogador1, escolha);
+              referencia[0] = teste.pLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.pLado == referencia[1]) {
+              removerPeca(&jogador1, escolha);
+              referencia[1] = teste.sLado;
+              cont_gato_lebre_p1--;
+            } else if (teste.sLado == referencia[1]) {
+              removerPeca(&jogador1, escolha);
+              referencia[1] = teste.pLado;
+              cont_gato_lebre_p1--;
+            } else if (escolha < cont_gato_lebre_p1 && escolha > 0 &&
+                       teste.pLado != referencia[0] &&
+                       teste.sLado != referencia[0] &&
+                       teste.pLado != referencia[1] &&
+                       teste.sLado != referencia[1]) {
+              system("clear");
+              printf("\nOlha o gato com lebre aí, jogador!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
             enfileirar(&mesa, teste);
             if (filaVazia(&jogador1)) {
               printf("\nJogador1 Ganhou!\n");
@@ -491,6 +568,52 @@ int main() {
               }
               break;
             }
+            system("clear");
+            printf("\nJogador 2:\n");
+            imprimirFila(&jogador2);
+            printf("\nNúmeros disponíveis em cada lado: \n");
+            printf("\n\t\t\t\t%d|%d\n", referencia[0], referencia[1]);
+            printf("\nVez do jogador 2: ");
+            printf("\nEscolha uma peça: ");
+            scanf("%d", &escolha);
+            if (escolha == 0) {
+              break;
+            }
+            if (escolha > 6 || escolha < 0) {
+              system("clear");
+              printf("\nJogador 2 tocou!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            teste = obterPeca(&jogador2, escolha);
+            if (teste.pLado == referencia[0]) {
+              removerPeca(&jogador2, escolha);
+              referencia[0] = teste.sLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.sLado == referencia[0]) {
+              removerPeca(&jogador2, escolha);
+              referencia[0] = teste.pLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.pLado == referencia[1]) {
+              removerPeca(&jogador2, escolha);
+              referencia[1] = teste.sLado;
+              cont_gato_lebre_p2--;
+            } else if (teste.sLado == referencia[1]) {
+              removerPeca(&jogador2, escolha);
+              referencia[1] = teste.pLado;
+              cont_gato_lebre_p2--;
+            } else if (escolha < cont_gato_lebre_p2 && escolha > 0 &&
+                       teste.pLado != referencia[0] &&
+                       teste.sLado != referencia[0] &&
+                       teste.pLado != referencia[1] &&
+                       teste.sLado != referencia[1]) {
+              system("clear");
+              printf("\nOlha o gato com lebre aí, jogador!");
+              printf("\n ");
+              sleep_ms(1000);
+            }
+            enfileirar(&mesa, teste);
+            // fim do resto das jogadas começando pelo jogador 1
             if (filaVazia(&jogador2)) {
               printf("\nJogador2 Ganhou!\n");
               cont_jogador2++;
@@ -503,43 +626,33 @@ int main() {
         }
       }
 
-      printf("\n\n-----MESA-----\n");
+      printf("\n\n-----HISTÓRICO DAS JOGADAS-----\n");
       imprimirFila(&mesa);
-      // mesa.frente->peca.pLado = teste.pLado;
-      // mesa.tras->peca.sLado = teste.sLado;
-      // printf("\nprimeiro lado : %d", teste.pLado);
-      // printf("\nsegundo lado: %d", mesa.tras->peca.sLado);
-
-      printf(
-          "--------------------------------X--------------------------------");
 
       printf("\n");
       printf("\n");
 
-      // printf("\nSoma dos dois lados das pedras de cada jogador: \n");
-
-      // printf("\nJogador 1: \n");
-      // calcularSomaLadosJogador(&jogador1);
-
-      // printf("\n");
-      // printf("\n");
-
-      // printf("\nJogador 2: \n");
-      // calcularSomaLadosJogador(&jogador2);
-
-      // printf("\n");
-      // printf("\n");
-      // printf("\n");
-
-      printf(
-          "--------------------------------X--------------------------------");
+      sleep_ms(5000);
       break;
 
     case 2:
-        printf("\n Placar: \n");
-        printf("\nJogador 1: %d vitórias\n", cont_jogador1);
-        printf("\nJogador 2: %d vitórias\n", cont_jogador2);
-      break;
+      players[0].victories=cont_jogador1;
+      strcpy(players[0].name,"Jogador 1");
+      players[1].victories=cont_jogador2;
+      strcpy(players[1].name,"Jogador 2");
+      show_ranking(players, 2);
+      int sair;
+      printf("\nInsira 1 para sair:");
+      scanf("%d", &sair);
+      if (sair == 1) {
+        break;
+      } else {
+        while (sair != 1) {
+          printf("\nDigita o número correto, parceiro(a):");
+          scanf("%d", &sair);
+        }
+        break;
+      }
 
     case 3:
       printf("\n Saindo do Jogo... \n");
@@ -548,6 +661,7 @@ int main() {
 
     default:
       printf("\nOpção inválida, digite outro número!\n");
+      sleep_ms(2000);
       break;
     }
 
